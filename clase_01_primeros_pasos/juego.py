@@ -6,7 +6,7 @@ pygame.init()
 ANCHO, ALTO = 800, 600
 
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
-pygame.display.set_caption("Mi primer juego")
+pygame.display.set_caption("Clase 01 - Mi primer juego")
 
 reloj = pygame.time.Clock()
 
