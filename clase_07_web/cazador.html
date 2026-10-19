@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cazador de Estrellas</title>
+  <style>
+    body { background: #11152b; color: white; font-family: Arial, sans-serif; text-align: center; }
+    canvas { max-width: 95vw; background: #0a0a2e; border: 2px solid #6e83b7; }
+  </style>
+</head>
+<body>
+  <h2>Cazador de Estrellas</h2>
+  <p>Movete con las flechas izquierda y derecha. ¡Atrapá las estrellas!</p>
+  <canvas id="juego" width="600" height="400"></canvas>
+  <p>Si llegás a -3 puntos, perdés. Presioná R para volver a jugar.</p>
+  <script>
+    const canvas = document.getElementById("juego");
+    const ctx = canvas.getContext("2d");
+    const teclas = {};
+    const velocidad = 5;
+    let x, puntos, terminado, estrella, estrellaRoja;
+
+    function nuevaEstrella(roja) {
+      return { x: 15 + Math.random() * 570, y: roja ? -180 : -10, roja: roja };
+    }
+
+    function reiniciar() {
+      x = 300;
+      puntos = 0;
+      terminado = false;
+      estrella = nuevaEstrella(false);
+      estrellaRoja = nuevaEstrella(true);
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (["ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
+      teclas[e.key] = true;
+      if (e.key.toLowerCase() === "r" && terminado) reiniciar();
+    });
+    document.addEventListener("keyup", e => teclas[e.key] = false);
+
+    function moverEstrella(objeto, rapidez) {
+      objeto.y += rapidez;
+      // El cazador es una paleta de 50 píxeles en y=370.
+      if (objeto.y + 10 >= 370 && objeto.y - 10 <= 382 &&
+          Math.abs(objeto.x - x) < 35) {
+        puntos += objeto.roja ? 5 : 1;
+        Object.assign(objeto, nuevaEstrella(objeto.roja));
+      } else if (objeto.y - 10 > 400) {
+        puntos -= 1;
+        Object.assign(objeto, nuevaEstrella(objeto.roja));
+      }
+      if (puntos <= -3) terminado = true;
+    }
+
+    function actualizar() {
+      if (terminado) return;
+      if (teclas["ArrowLeft"]) x -= velocidad;
+      if (teclas["ArrowRight"]) x += velocidad;
+      x = Math.max(25, Math.min(575, x));
+      const caida = 2 + Math.max(0, puntos) * 0.2;
+      moverEstrella(estrella, caida);
+      if (!terminado) moverEstrella(estrellaRoja, caida * 2);
+    }
+
+    function dibujarEstrella(objeto) {
+      ctx.fillStyle = objeto.roja ? "#ff5252" : "#ffd700";
+      ctx.beginPath();
+      ctx.arc(objeto.x, objeto.y, objeto.roja ? 12 : 10, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function dibujar() {
+      ctx.fillStyle = "#0a0a2e";
+      ctx.fillRect(0, 0, 600, 400);
+      dibujarEstrella(estrella);
+      dibujarEstrella(estrellaRoja);
+      ctx.fillStyle = "#00ccff";
+      ctx.fillRect(x - 25, 370, 50, 12);
+      ctx.fillStyle = "white";
+      ctx.font = "20px monospace";
+      ctx.fillText("Puntos: " + puntos, 12, 28);
+      if (terminado) {
+        ctx.fillStyle = "rgba(0,0,0,0.75)";
+        ctx.fillRect(0, 0, 600, 400);
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.font = "32px Arial";
+        ctx.fillText("¡Perdiste!", 300, 190);
+        ctx.font = "18px Arial";
+        ctx.fillText("Presioná R para reiniciar", 300, 225);
+        ctx.textAlign = "left";
+      }
+    }
+
+    function loop() {
+      actualizar();
+      dibujar();
+      requestAnimationFrame(loop);
+    }
+    reiniciar();
+    loop();
+  </script>
+</body>
+</html>
