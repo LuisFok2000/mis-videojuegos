@@ -2,7 +2,7 @@
 
 **Entrega:** Taller de Videojuegos 2D (TVJ2D 2026), opción 2: RPG isométrico.  
 **Versión:** 2.0 — tres niveles, habitaciones, enemigos especiales y nuevo arte.  
-**Integrantes:** [COMPLETAR POR EL EQUIPO].
+**Integrante:** Luis Andrada.
 
 ## 1. Idea, objetivo y ambientación
 
